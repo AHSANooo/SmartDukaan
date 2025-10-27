@@ -10,6 +10,7 @@ import android.widget.ImageButton
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.smartdukaan.ui.home.HomeFragment
+import java.util.UUID
 
 class AddItemFragment : Fragment() {
 
@@ -36,15 +37,44 @@ class AddItemFragment : Fragment() {
     }
 
     private fun saveItem(view: View) {
-        val nameUrdu = view.findViewById<EditText>(R.id.etNameUrdu)?.text.toString()
-        val nameEnglish = view.findViewById<EditText>(R.id.etName)?.text.toString()
+        val etName = view.findViewById<EditText>(R.id.etNameUrdu)
+        val etBuying = view.findViewById<EditText>(R.id.etBuying)
+        val etSelling = view.findViewById<EditText>(R.id.etSelling)
+        val etQty = view.findViewById<EditText>(R.id.etQty)
+        val etBarcode = view.findViewById<EditText>(R.id.etBarcode)
 
-        if (nameUrdu.isEmpty() || nameEnglish.isEmpty()) {
-            Toast.makeText(requireContext(), "Please fill all required fields", Toast.LENGTH_SHORT).show()
+        val nameEnglish = etName?.text.toString()
+        val buyingPrice = etBuying?.text.toString().toDoubleOrNull() ?: 0.0
+        val sellingPrice = etSelling?.text.toString().toDoubleOrNull() ?: 0.0
+        val qty = etQty?.text.toString().toDoubleOrNull() ?: 0.0
+        val barcode = etBarcode?.text.toString()
+
+        // Validation
+        if (nameEnglish.isEmpty()) {
+            Toast.makeText(context, "Please fill item name", Toast.LENGTH_SHORT).show()
             return
         }
 
-        Toast.makeText(requireContext(), "Item added successfully!", Toast.LENGTH_SHORT).show()
+        if (sellingPrice <= 0) {
+            Toast.makeText(context, "Please enter valid selling price", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Create and save item
+        val item = Item(
+            id = UUID.randomUUID().toString(),
+            name = nameEnglish,
+            buyingPrice = buyingPrice,
+            sellingPrice = sellingPrice,
+            qty = qty,
+            category = "",
+            barcode = barcode
+        )
+
+        DataManager.addItem(item)
+
+        Toast.makeText(context, "✓ Item added successfully!", Toast.LENGTH_SHORT).show()
         (activity as? MainActivity)?.replaceFragment(HomeFragment())
     }
 }
+

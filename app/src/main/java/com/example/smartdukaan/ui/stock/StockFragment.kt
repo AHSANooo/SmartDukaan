@@ -125,13 +125,11 @@ class StockFragment : Fragment() {
 
     private fun showEditDialog(item: Item) {
         val dialogView = layoutInflater.inflate(R.layout.fragment_add_item, null)
-        val etNameUrdu = dialogView.findViewById<EditText>(R.id.etNameUrdu)
-        val etName = dialogView.findViewById<EditText>(R.id.etName)
+        val etName = dialogView.findViewById<EditText>(R.id.etNameUrdu)
         val etBuying = dialogView.findViewById<EditText>(R.id.etBuying)
         val etSelling = dialogView.findViewById<EditText>(R.id.etSelling)
         val etQty = dialogView.findViewById<EditText>(R.id.etQty)
 
-        etNameUrdu.setText(item.nameUrdu)
         etName.setText(item.name)
         etBuying.setText(item.buyingPrice.toString())
         etSelling.setText(item.sellingPrice.toString())
@@ -141,7 +139,6 @@ class StockFragment : Fragment() {
             .setTitle("Edit ${item.name}")
             .setView(dialogView)
             .setPositiveButton("Save") { _, _ ->
-                item.nameUrdu = etNameUrdu.text.toString()
                 item.name = etName.text.toString()
                 item.buyingPrice = etBuying.text.toString().toDoubleOrNull() ?: 0.0
                 item.sellingPrice = etSelling.text.toString().toDoubleOrNull() ?: 0.0
