@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary_dark">#0F3460</color>
+    <color name="primary_light">#1F2394</color>
+    <color name="success">#28A745</color>
+    <color name="alert">#DC3545</color>
+    <color name="bg">#FFFFFF</color>
+    <color name="surface">#F5F5F5</color>
+    <color name="text_primary">#212121</color>
+    <color name="darkBlue">#1B3A5F</color>
+    <color name="lightBlue">#2E2FB8</color>
+    <color name="deepBlue">#1A1F71</color>
+    <color name="successGreen">#28A745</color>
+    <color name="errorRed">#DC3545</color>
+    <color name="bgWhite">#FFFFFF</color>
+    <color name="bgGray">#F8F8F8</color>
+    <color name="dividerGray">#F5F5F5</color>
+    <color name="textPrimary">#0B3954</color>
+    <color name="textSecondary">#6B7280</color>
+    <color name="cardBorder">#E5E7EB</color>
+    <color name="iconGray">#9CA3AF</color>
+</resources>
