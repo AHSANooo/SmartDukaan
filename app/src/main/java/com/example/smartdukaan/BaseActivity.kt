@@ -73,7 +73,10 @@ abstract class BaseActivity : AppCompatActivity() {
         }
 
         val intent = Intent(this, activityClass)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        // Remove FLAG_ACTIVITY_CLEAR_TASK to prevent black screen
+        intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
         startActivity(intent)
+        // Add smooth transition animation
+        overridePendingTransition(0, 0)
     }
 }

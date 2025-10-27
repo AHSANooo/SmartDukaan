@@ -65,19 +65,19 @@ class StockFragment : Fragment() {
 
     private fun selectFilter(filter: String, vararg chips: TextView) {
         currentFilter = filter
-        // Reset all chips
+        // Reset all chips to unselected state
         chips.forEach {
-            it.setBackgroundColor(requireContext().getColor(R.color.dividerGray))
+            it.setBackgroundResource(R.drawable.chip_background)
             it.setTextColor(requireContext().getColor(R.color.textSecondary))
         }
-        // Highlight selected
+        // Highlight selected chip
         val selectedChip = when(filter) {
             "LOW" -> chips[1]
             "OUT" -> chips[2]
             "IN" -> chips[3]
             else -> chips[0]
         }
-        selectedChip.setBackgroundColor(requireContext().getColor(R.color.darkBlue))
+        selectedChip.setBackgroundResource(R.drawable.chip_background_selected)
         selectedChip.setTextColor(requireContext().getColor(android.R.color.white))
 
         applyFilter(filter, "")
