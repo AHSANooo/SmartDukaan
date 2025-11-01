@@ -1,7 +1,6 @@
 package com.example.smartdukaan
 
 import android.os.Bundle
-import com.example.smartdukaan.StockFragment
 
 class StockActivity : BaseActivity() {
 

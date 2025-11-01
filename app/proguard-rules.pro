@@ -5,17 +5,67 @@
 # For more details, see
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# Keep line numbers for better crash reports
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# Keep data classes used for JSON serialization
+-keep class com.example.smartdukaan.Item { *; }
+-keep class com.example.smartdukaan.Sale { *; }
+-keep class com.example.smartdukaan.SaleItem { *; }
+-keep class com.example.smartdukaan.utils.BackupManager$BackupData { *; }
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# Gson rules
+-keepattributes Signature
+-keepattributes *Annotation*
+-keepattributes EnclosingMethod
+-dontwarn sun.misc.**
+-keep class com.google.gson.** { *; }
+-keep class * implements com.google.gson.TypeAdapter
+-keep class * implements com.google.gson.TypeAdapterFactory
+-keep class * implements com.google.gson.JsonSerializer
+-keep class * implements com.google.gson.JsonDeserializer
+
+# Keep generic signature of Gson TypeToken
+-keepclassmembers,allowobfuscation class * {
+  @com.google.gson.annotations.SerializedName <fields>;
+}
+
+# Prevent obfuscation of generic types
+-keep class com.google.gson.reflect.TypeToken { *; }
+-keep class * extends com.google.gson.reflect.TypeToken
+
+# Keep fragment constructors
+-keepclassmembers class * extends androidx.fragment.app.Fragment {
+    public <init>(...);
+}
+
+# Keep activity and fragment names for navigation
+-keep class com.example.smartdukaan.*Activity { *; }
+-keep class com.example.smartdukaan.*Fragment { *; }
+-keep class com.example.smartdukaan.ui.** { *; }
+
+# Keep utility classes
+-keep class com.example.smartdukaan.utils.** { *; }
+
+# Keep DataManager singleton
+-keep class com.example.smartdukaan.DataManager { *; }
+
+# Remove all logging in release builds
+-assumenosideeffects class android.util.Log {
+    public static *** d(...);
+    public static *** v(...);
+    public static *** i(...);
+}
+
+# Keep annotations
+-keepattributes *Annotation*
+
+# AndroidX
+-keep class androidx.** { *; }
+-keep interface androidx.** { *; }
+-dontwarn androidx.**
+
+# Material Design
+-keep class com.google.android.material.** { *; }
+-dontwarn com.google.android.material.**

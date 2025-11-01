@@ -106,55 +106,91 @@ class SaleSummaryFragment : Fragment() {
             return
         }
 
-        val discount = etDiscount.text.toString().toDoubleOrNull() ?: 0.0
-        val subtotal = cartItems.sumOf { it.unitPrice * it.qty }
-        val total = (subtotal - discount).coerceAtLeast(0.0)
+        try {
+            val discount = etDiscount.text.toString().toDoubleOrNull() ?: 0.0
+            val subtotal = cartItems.sumOf { it.unitPrice * it.qty }
 
-        // Calculate profit
-        var profit = 0.0
-        cartItems.forEach { saleItem ->
-            val item = DataManager.getItemById(saleItem.itemId)
-            if (item != null) {
-                profit += (saleItem.unitPrice - item.buyingPrice) * saleItem.qty
+            // Validate discount
+            val discountValidation = com.example.smartdukaan.utils.ValidationHelper.validateDiscount(discount, subtotal)
+            if (!discountValidation.isValid) {
+                etDiscount.error = discountValidation.errorMessage
+                Toast.makeText(requireContext(), discountValidation.errorMessage, Toast.LENGTH_SHORT).show()
+                return
             }
-        }
 
-        // Adjust profit for discount
-        profit = (profit - discount).coerceAtLeast(0.0)
+            val total = (subtotal - discount).coerceAtLeast(0.0)
 
-        // Create sale record
-        val sale = Sale(
-            id = UUID.randomUUID().toString(),
-            items = cartItems.toList(),
-            total = total,
-            discount = discount,
-            profit = profit,
-            timestamp = System.currentTimeMillis()
-        )
+            // Verify stock availability before completing sale
+            for (saleItem in cartItems) {
+                val item = DataManager.getItemById(saleItem.itemId)
+                if (item == null) {
+                    Toast.makeText(requireContext(), "Item ${saleItem.name} not found", Toast.LENGTH_SHORT).show()
+                    return
+                }
+                if (item.qty < saleItem.qty) {
+                    Toast.makeText(
+                        requireContext(),
+                        "Insufficient stock for ${item.name}. Available: ${item.qty.toInt()}, Required: ${saleItem.qty.toInt()}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    return
+                }
+            }
 
-        // Save sale (this will also update stock quantities)
-        DataManager.addSale(sale)
+            // Calculate profit
+            var profit = 0.0
+            cartItems.forEach { saleItem ->
+                val item = DataManager.getItemById(saleItem.itemId)
+                if (item != null) {
+                    profit += (saleItem.unitPrice - item.buyingPrice) * saleItem.qty
+                }
+            }
 
-        // Show success message
-        AlertDialog.Builder(requireContext())
-            .setTitle("✓ Sale Completed!")
-            .setMessage(
-                "Total Amount: Rs ${total.toInt()}\n" +
-                        "Profit: Rs ${profit.toInt()}\n" +
-                        "Items Sold: ${cartItems.size}"
+            // Adjust profit for discount
+            profit = (profit - discount).coerceAtLeast(0.0)
+
+            // Create sale record
+            val sale = Sale(
+                id = UUID.randomUUID().toString(),
+                items = cartItems.toList(),
+                total = total,
+                discount = discount,
+                profit = profit,
+                timestamp = System.currentTimeMillis()
             )
-            .setPositiveButton("View Reports") { _, _ ->
-                val intent = Intent(requireContext(), ReportsActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                startActivity(intent)
-            }
-            .setNegativeButton("New Sale") { _, _ ->
-                activity?.finish()
-                val intent = Intent(requireContext(), SaleActivity::class.java)
-                startActivity(intent)
-            }
-            .setCancelable(false)
-            .show()
+
+            // Save sale (this will also update stock quantities)
+            DataManager.addSale(sale)
+
+            // Show success message
+            AlertDialog.Builder(requireContext())
+                .setTitle("✓ Sale Completed!")
+                .setMessage(
+                    "Total Amount: Rs ${total.toInt()}\n" +
+                            "Profit: Rs ${profit.toInt()}\n" +
+                            "Items Sold: ${cartItems.size}"
+                )
+                .setPositiveButton("View Reports") { _, _ ->
+                    val intent = Intent(requireContext(), ReportsActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    startActivity(intent)
+                }
+                .setNegativeButton("New Sale") { _, _ ->
+                    activity?.finish()
+                    val intent = Intent(requireContext(), SaleActivity::class.java)
+                    startActivity(intent)
+                }
+                .setCancelable(false)
+                .show()
+        } catch (e: IllegalArgumentException) {
+            Toast.makeText(requireContext(), e.message, Toast.LENGTH_LONG).show()
+        } catch (e: Exception) {
+            com.example.smartdukaan.utils.ErrorHandler.handleError(
+                requireContext(),
+                e,
+                "Failed to complete sale. Please try again."
+            )
+        }
     }
 
     private fun cancelSale() {

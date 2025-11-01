@@ -6,6 +6,7 @@ import android.view.*
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -57,19 +58,32 @@ class StockFragment : Fragment() {
         val chipOutOfStock = v.findViewById<TextView>(R.id.chipOutOfStock)
         val chipInStock = v.findViewById<TextView>(R.id.chipInStock)
 
-        chipAll.setOnClickListener { selectFilter("ALL", chipAll, chipLowStock, chipOutOfStock, chipInStock) }
-        chipLowStock.setOnClickListener { selectFilter("LOW", chipAll, chipLowStock, chipOutOfStock, chipInStock) }
-        chipOutOfStock.setOnClickListener { selectFilter("OUT", chipAll, chipLowStock, chipOutOfStock, chipInStock) }
-        chipInStock.setOnClickListener { selectFilter("IN", chipAll, chipLowStock, chipOutOfStock, chipInStock) }
+        chipAll.setOnClickListener {
+            selectFilter("ALL", chipAll, chipLowStock, chipOutOfStock, chipInStock)
+        }
+        chipLowStock.setOnClickListener {
+            selectFilter("LOW", chipAll, chipLowStock, chipOutOfStock, chipInStock)
+        }
+        chipOutOfStock.setOnClickListener {
+            selectFilter("OUT", chipAll, chipLowStock, chipOutOfStock, chipInStock)
+        }
+        chipInStock.setOnClickListener {
+            selectFilter("IN", chipAll, chipLowStock, chipOutOfStock, chipInStock)
+        }
+
+        // Set initial selection to "ALL"
+        selectFilter("ALL", chipAll, chipLowStock, chipOutOfStock, chipInStock)
     }
 
     private fun selectFilter(filter: String, vararg chips: TextView) {
         currentFilter = filter
+
         // Reset all chips to unselected state
         chips.forEach {
             it.setBackgroundResource(R.drawable.chip_background)
-            it.setTextColor(requireContext().getColor(R.color.textSecondary))
+            it.setTextColor(ContextCompat.getColor(requireContext(), R.color.textSecondary))
         }
+
         // Highlight selected chip
         val selectedChip = when(filter) {
             "LOW" -> chips[1]
@@ -78,9 +92,12 @@ class StockFragment : Fragment() {
             else -> chips[0]
         }
         selectedChip.setBackgroundResource(R.drawable.chip_background_selected)
-        selectedChip.setTextColor(requireContext().getColor(android.R.color.white))
+        selectedChip.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.white))
 
-        applyFilter(filter, "")
+        // Get search query if exists
+        val etSearch = view?.findViewById<EditText>(R.id.etStockSearch)
+        val searchQuery = etSearch?.text?.toString()?.lowercase() ?: ""
+        applyFilter(filter, searchQuery)
     }
 
     private fun applyFilter(filter: String, searchQuery: String) {

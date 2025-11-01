@@ -1,8 +1,7 @@
 package com.example.smartdukaan
 
 import android.os.Bundle
-import com.example.smartdukaan.BaseActivity
-import com.example.smartdukaan.R
+
 class ReportsActivity : BaseActivity() {
 
     override fun getLayoutResourceId(): Int = R.layout.activity_main
